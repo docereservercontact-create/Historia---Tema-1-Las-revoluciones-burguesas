@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Examen de Historia | Unidad 1: La historia</title>
+<title>Examen de Historia | Unidad 2: Las revoluciones burguesas</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
@@ -43,7 +43,7 @@ button {
 <body>
 
 <div id="inicio">
-    <h2>Examen de Historia | Unidad 1: La historia</h2>
+    <h2>Examen de Historia | Unidad 2: Las revoluciones burguesas</h2>
     <input id="nombre" placeholder="Usuario">
     <input id="cuenta" placeholder="Contraseña">
     <button onclick="iniciarExamen()">Iniciar</button>
@@ -75,29 +75,34 @@ const alumnos = [
 ];
 
 // CONFIG
-const TOTAL_PREGUNTAS = 15;
+const TOTAL_PREGUNTAS = 20;
 
 // 🧠 PREGUNTAS
 const preguntas = [
-    {enunciado:"¿Cuál es la definición más adecuada de historia?", opciones:["El estudio de los fenómenos naturales","El análisis de los hechos pasados del ser humano","La narración de mitos y leyendas","El registro de datos matemáticos"]},
-    {enunciado:"¿Cuál es la principal utilidad de la historia?", opciones:["Memorizar fechas importantes","Predecir el futuro con exactitud","Comprender el presente a partir del pasado","Estudiar únicamente a los gobernantes"]},
-    {enunciado:"¿Qué tipo de fuente histórica es un códice prehispánico?", opciones:["Fuente secundaria","Fuente oral","Fuente primaria","Fuente indirecta"]},
-    {enunciado:"¿Cuál de los siguientes es un ejemplo de fuente secundaria?", opciones:["Una carta escrita en el siglo XVI","Un libro de historia contemporáneo","Un fósil humano","Un monumento antiguo"]},
-    {enunciado:"Las fuentes históricas materiales incluyen:", opciones:["Testimonios orales","Libros y crónicas","Objetos como herramientas o construcciones","Narraciones ficticias"]},
-    {enunciado:"¿Qué caracteriza a una fuente histórica primaria?", opciones:["Es interpretada por historiadores","Es contemporánea al hecho estudiado","Es una recopilación moderna","Es ficticia"]},
-    {enunciado:"¿Cuál es el objetivo de las corrientes de interpretación histórica?", opciones:["Memorizar fechas importantes","Explicar los hechos históricos desde diferentes enfoques","Eliminar versiones del pasado","Establecer una sola verdad histórica"]},
-    {enunciado:"El materialismo histórico propone que:", opciones:["La historia depende de las ideas religiosas","La economía es el motor de la historia","Los héroes determinan el curso histórico","El azar dirige los acontecimientos"]},
-    {enunciado:"¿Qué corriente histórica se centra en el papel de los grandes personajes?", opciones:["Materialismo histórico","Positivismo","Historicismo","Idealismo"]},
-    {enunciado:"¿Qué plantea el positivismo histórico?", opciones:["La historia debe basarse en métodos científicos y datos verificables","La historia es subjetiva","Los mitos explican el pasado","No existen hechos históricos comprobables"]},
-    {enunciado:"¿Qué es la periodización de la historia?", opciones:["La narración de hechos sin orden","La división del tiempo histórico en etapas","El estudio exclusivo del presente","La interpretación de documentos"]},
-    {enunciado:"¿Cuál es una división clásica de la historia universal?", opciones:["Antigua, Moderna y Digital","Prehistoria, Edad Antigua, Media, Moderna y Contemporánea","Colonial, Industrial y Tecnológica","Primitiva, Clásica y Actual"]},
-    {enunciado:"¿Qué evento marca tradicionalmente el inicio de la Edad Media?", opciones:["La Revolución Francesa","La caída del Imperio Romano de Occidente","El descubrimiento de América","La invención de la imprenta"]},
-    {enunciado:"¿Qué elemento es esencial para el trabajo del historiador?", opciones:["La imaginación","Las fuentes históricas","La opinión personal","Los rumores"]},
-    {enunciado:"¿Por qué la historia puede tener diferentes interpretaciones?", opciones:["Porque los hechos cambian constantemente","Porque depende del punto de vista y enfoque del historiador","Porque no existen evidencias","Porque es una ciencia exacta"]}
+    {enunciado:"¿Cuál fue el principal objetivo de la Ilustración?", opciones:["Defender el absolutismo","Promover la razón y el conocimiento científico","Fortalecer la religión","Eliminar la educación"]},
+    {enunciado:"¿Qué pensador propuso la división de poderes?", opciones:["John Locke","Montesquieu","Rousseau","Voltaire"]},
+    {enunciado:"¿Qué idea defendía John Locke?", opciones:["El derecho divino de los reyes","El contrato social y derechos naturales","La monarquía absoluta","La censura"]},
+    {enunciado:"¿Quién escribió 'El contrato social'?", opciones:["Voltaire","Montesquieu","Rousseau","Locke"]},
+    {enunciado:"¿Qué defendía Voltaire?", opciones:["La intolerancia religiosa","La libertad de pensamiento y expresión","El absolutismo","La esclavitud"]},
+    {enunciado:"¿Qué grupo social se fortaleció con las revoluciones burguesas?", opciones:["Nobleza","Clero","Campesinado","Burguesía"]},
+    {enunciado:"¿Cuál era una característica de la burguesía?", opciones:["Vivían del campo","Dependían del rey","Tenían poder económico por comercio","Eran siervos"]},
+    {enunciado:"¿Qué causó la Independencia de las Trece Colonias?", opciones:["Apoyo del rey","Altos impuestos sin representación","Deseo de expandirse","Problemas religiosos"]},
+    {enunciado:"¿En qué año se firmó la independencia de las Trece Colonias?", opciones:["1492","1776","1810","1789"]},
+    {enunciado:"¿Qué documento proclamó la independencia de Estados Unidos?", opciones:["La Constitución","Declaración de Independencia","Tratado de París","Código Civil"]},
+    {enunciado:"¿Cuál fue una causa de la Revolución Francesa?", opciones:["Exceso de democracia","Crisis económica y desigualdad social","Paz prolongada","Falta de comercio"]},
+    {enunciado:"¿Qué grupo social lideró la Revolución Francesa?", opciones:["Clero","Nobleza","Tercer Estado","Rey"]},
+    {enunciado:"¿Qué lema representó la Revolución Francesa?", opciones:["Orden y progreso","Libertad, igualdad y fraternidad","Paz y justicia","Trabajo y honor"]},
+    {enunciado:"¿Quién fue Napoleón Bonaparte?", opciones:["Rey de Inglaterra","Líder militar francés","Filósofo ilustrado","Campesino"]},
+    {enunciado:"¿Qué buscaban las independencias en Hispanoamérica?", opciones:["Fortalecer España","Lograr autonomía y libertad","Apoyar al rey","Eliminar comercio"]},
+    {enunciado:"¿Cuál fue una causa de la independencia de Hispanoamérica?", opciones:["Abundancia económica","Influencias de la Ilustración","Apoyo total de España","Falta de líderes"]},
+    {enunciado:"¿Qué caracterizó a la Revolución Industrial?", opciones:["Uso de máquinas y fábricas","Regreso al campo","Disminución de producción","Uso exclusivo de mano de obra artesanal"]},
+    {enunciado:"¿Dónde inició la Revolución Industrial?", opciones:["Francia","Alemania","Inglaterra","España"]},
+    {enunciado:"¿Qué propone el liberalismo económico?", opciones:["Control total del Estado","Libertad de mercado","Eliminación del comercio","Monopolios estatales"]},
+    {enunciado:"¿Qué defiende el liberalismo político?", opciones:["Monarquía absoluta","Derechos individuales y participación ciudadana","Dictadura","Control militar"]}
 ];
 
 // ✅ RESPUESTAS
-const respuestasCorrectas = ["B","C","C","B","C","B","B","B","D","A","B","B","B","B","B"];
+const respuestasCorrectas = ["B","B","B","C","B","D","C","B","B","B","B","C","B","B","B","B","A","C","B","B"];
 const TIEMPO_EXAMEN = 20 * 60; // 20 minutos
 let tiempo = TIEMPO_EXAMEN;
 let intervalo;

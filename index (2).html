@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Examen de Historia | Unidad 1: La historia</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body { font-family: Arial; margin:0; background:#f4f6f9; }
+
+#inicio, #resultados {
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    height:100vh;
+}
+
+input { padding:10px; margin:10px; width:250px; }
+
+button {
+    padding:10px 20px;
+    background:#2c7be5;
+    color:white; border:none;
+    cursor:pointer;
+}
+
+#examen { display:none; min-height:100vh; }
+
+.container { display:flex; min-height:100vh; }
+
+.right { width:100%; overflow-y:scroll; padding:20px; }
+
+.timer {
+    position:fixed; top:10px; right:20px;
+    background:black; color:white;
+    padding:10px;
+}
+
+.correcto { background:#c8f7c5; }
+.incorrecto { background:#f7c5c5; }
+</style>
+</head>
+
+<body>
+
+<div id="inicio">
+    <h2>Examen de Historia | Unidad 1: La historia</h2>
+    <input id="nombre" placeholder="Usuario">
+    <input id="cuenta" placeholder="Contraseña">
+    <button onclick="iniciarExamen()">Iniciar</button>
+</div>
+
+<div id="examen">
+    <div class="timer" id="timer"></div>
+    <div class="container">
+        <div class="right" id="respuestas"></div>
+    </div>
+</div>
+
+<div id="resultados"></div>
+
+<script>
+// 🔐 ALUMNOS (SIN CAMBIOS)
+const alumnos = [
+    {nombre:"mmariazas10@gmail.com", cuenta:"Reg2026"},
+    {nombre:"danteramirezcabrera20@gmail.com", cuenta:"Reg2026"},
+    {nombre:"josebeth2810@gmail.com", cuenta:"UNAM2026"},
+    {nombre:"nahomiosorior@gmail.com", cuenta:"UNAM2026"},
+    {nombre:"emilyperez.her412@gmail.com", cuenta:"UNAM2026"},
+    {nombre:"diego0134r@gmail.com", cuenta:"UNAM2026"},
+    {nombre:"p13", cuenta:"1"},
+    {nombre:"p10", cuenta:"1"},
+    {nombre:"p9", cuenta:"1"},
+    {nombre:"p7", cuenta:"1"},
+
+];
+
+// CONFIG
+const TOTAL_PREGUNTAS = 15;
+
+// 🧠 PREGUNTAS
+const preguntas = [
+    {enunciado:"¿Cuál es la definición más adecuada de historia?", opciones:["El estudio de los fenómenos naturales","El análisis de los hechos pasados del ser humano","La narración de mitos y leyendas","El registro de datos matemáticos"]},
+    {enunciado:"¿Cuál es la principal utilidad de la historia?", opciones:["Memorizar fechas importantes","Predecir el futuro con exactitud","Comprender el presente a partir del pasado","Estudiar únicamente a los gobernantes"]},
+    {enunciado:"¿Qué tipo de fuente histórica es un códice prehispánico?", opciones:["Fuente secundaria","Fuente oral","Fuente primaria","Fuente indirecta"]},
+    {enunciado:"¿Cuál de los siguientes es un ejemplo de fuente secundaria?", opciones:["Una carta escrita en el siglo XVI","Un libro de historia contemporáneo","Un fósil humano","Un monumento antiguo"]},
+    {enunciado:"Las fuentes históricas materiales incluyen:", opciones:["Testimonios orales","Libros y crónicas","Objetos como herramientas o construcciones","Narraciones ficticias"]},
+    {enunciado:"¿Qué caracteriza a una fuente histórica primaria?", opciones:["Es interpretada por historiadores","Es contemporánea al hecho estudiado","Es una recopilación moderna","Es ficticia"]},
+    {enunciado:"¿Cuál es el objetivo de las corrientes de interpretación histórica?", opciones:["Memorizar fechas importantes","Explicar los hechos históricos desde diferentes enfoques","Eliminar versiones del pasado","Establecer una sola verdad histórica"]},
+    {enunciado:"El materialismo histórico propone que:", opciones:["La historia depende de las ideas religiosas","La economía es el motor de la historia","Los héroes determinan el curso histórico","El azar dirige los acontecimientos"]},
+    {enunciado:"¿Qué corriente histórica se centra en el papel de los grandes personajes?", opciones:["Materialismo histórico","Positivismo","Historicismo","Idealismo"]},
+    {enunciado:"¿Qué plantea el positivismo histórico?", opciones:["La historia debe basarse en métodos científicos y datos verificables","La historia es subjetiva","Los mitos explican el pasado","No existen hechos históricos comprobables"]},
+    {enunciado:"¿Qué es la periodización de la historia?", opciones:["La narración de hechos sin orden","La división del tiempo histórico en etapas","El estudio exclusivo del presente","La interpretación de documentos"]},
+    {enunciado:"¿Cuál es una división clásica de la historia universal?", opciones:["Antigua, Moderna y Digital","Prehistoria, Edad Antigua, Media, Moderna y Contemporánea","Colonial, Industrial y Tecnológica","Primitiva, Clásica y Actual"]},
+    {enunciado:"¿Qué evento marca tradicionalmente el inicio de la Edad Media?", opciones:["La Revolución Francesa","La caída del Imperio Romano de Occidente","El descubrimiento de América","La invención de la imprenta"]},
+    {enunciado:"¿Qué elemento es esencial para el trabajo del historiador?", opciones:["La imaginación","Las fuentes históricas","La opinión personal","Los rumores"]},
+    {enunciado:"¿Por qué la historia puede tener diferentes interpretaciones?", opciones:["Porque los hechos cambian constantemente","Porque depende del punto de vista y enfoque del historiador","Porque no existen evidencias","Porque es una ciencia exacta"]}
+];
+
+// ✅ RESPUESTAS
+const respuestasCorrectas = ["B","C","C","B","C","B","B","B","D","A","B","B","B","B","B"];
+const TIEMPO_EXAMEN = 20 * 60; // 20 minutos
+let tiempo = TIEMPO_EXAMEN;
+let intervalo;
+let nombreAlumno, cuentaAlumno;
+
+let tiemposPreguntas = {};
+let inicioPregunta = Date.now();
+
+let progresoTexto = "0/0";
+
+// INICIO
+function iniciarExamen() {
+
+    nombreAlumno = document.getElementById("nombre").value.trim();
+    cuentaAlumno = document.getElementById("cuenta").value.trim();
+
+    if(nombreAlumno === "admin" && cuentaAlumno === "123"){
+        verPanelProfesor();
+        return;
+    }
+
+    let alumnoValido = alumnos.find(a =>
+        a.nombre.toLowerCase() === nombreAlumno.toLowerCase() &&
+        a.cuenta === cuentaAlumno
+    );
+
+    if (!alumnoValido) return alert("Alumno no registrado");
+
+    if (sessionStorage.getItem("examen_" + cuentaAlumno)) {
+        alert("Ya realizaste este examen");
+        return;
+    }
+
+    alert("Reglas:\n- No cambiar de pestaña\n- No copiar/pegar\n- Tiempo limitado");
+
+    document.getElementById("inicio").style.display = "none";
+    document.getElementById("examen").style.display = "block";
+
+    generarPreguntas();
+    iniciarTimer();
+    activarSeguridad();
+}
+
+// GENERAR
+function generarPreguntas() {
+    let cont = document.getElementById("respuestas");
+    cont.innerHTML = "";
+
+    preguntas.forEach((p, i) => {
+        cont.innerHTML += `
+        <div style="margin-bottom:15px;">
+            <label><b>${i+1}. ${p.enunciado}</b></label><br>
+
+            ${p.opciones.map((op, idx) => `
+                <label>
+                    <input type="radio" name="p${i}" value="${String.fromCharCode(65+idx)}"
+                    onchange="actualizarProgreso()">
+                    ${String.fromCharCode(65+idx)}) ${op}
+                </label><br>
+            `).join("")}
+        </div>`;
+    });
+
+    cont.innerHTML += `<button onclick="terminarExamen()">Enviar</button>`;
+}
+
+// TIMER
+function iniciarTimer() {
+    intervalo = setInterval(() => {
+
+        tiempo--;
+
+        let min = Math.floor(tiempo/60);
+        let seg = tiempo%60;
+
+        actualizarProgreso();
+
+        document.getElementById("timer").innerText =
+            `${min}:${seg.toString().padStart(2,'0')} | ${progresoTexto}`;
+
+        if (tiempo<=0) terminarExamen();
+
+    },1000);
+}
+
+// PROGRESO
+function actualizarProgreso() {
+    let c = 0;
+
+    for (let i=0;i<TOTAL_PREGUNTAS;i++) {
+        let seleccionado = document.querySelector(`input[name="p${i}"]:checked`);
+        if (seleccionado) c++;
+    }
+
+    progresoTexto = `${c}/${TOTAL_PREGUNTAS}`;
+}
+
+// SEGURIDAD
+function activarSeguridad() {
+    document.addEventListener("contextmenu", e => e.preventDefault());
+
+    document.addEventListener("keydown", e=>{
+        if(e.ctrlKey && ['c','v','x'].includes(e.key)) e.preventDefault();
+    });
+
+    document.addEventListener("visibilitychange", ()=>{
+        if(document.hidden){
+            alert("Trampa detectada");
+            terminarExamen(true);
+        }
+    });
+
+    window.onbeforeunload = function(){
+        return "No puedes salir del examen";
+    };
+}
+
+// TERMINAR
+function terminarExamen(trampa=false) {
+
+    if (!trampa) {
+        if (!confirm("¿Seguro que deseas enviar?")) return;
+    }
+
+    clearInterval(intervalo);
+    
+    document.getElementById("examen").style.display="none";
+    document.getElementById("resultados").style.display="block";
+
+    let correctas=0;
+    let html=`<h2>Resultados</h2>
+              <p>${nombreAlumno}</p>
+              <p>${cuentaAlumno}</p>`;
+
+    html += "<table border='1'><tr><th>#</th><th>Pregunta</th><th>Tu</th><th>Correcta</th></tr>";
+
+    let datosPDF=[];
+
+    for(let i=0;i<TOTAL_PREGUNTAS;i++){
+
+        let seleccionado = document.querySelector(`input[name="p${i}"]:checked`);
+        let resp = seleccionado ? seleccionado.value : "";
+        let correcta=respuestasCorrectas[i];
+
+        let clase="incorrecto";
+
+        if(resp===correcta && !trampa){
+            correctas++;
+            clase="correcto";
+        }
+
+        html+=`<tr class="${clase}">
+            <td>${i+1}</td>
+            <td>${correcta}</td>
+            <td>${resp}</td>
+            <td>${correcta}</td>
+        </tr>`;
+
+        datosPDF.push([i+1,preguntas[i].enunciado,resp,correcta]);
+    }
+
+    html+="</table>";
+
+    let cal= trampa?0:(correctas/TOTAL_PREGUNTAS)*100;
+
+    html+=`
+    <p><b>Porcentaje:</b> ${cal.toFixed(2)}%</p>
+    <button onclick="generarPDF()">PDF</button>`;
+
+    document.getElementById("resultados").innerHTML=html;
+
+    window.datosPDF=datosPDF;
+    window.calificacion=cal;
+
+    sessionStorage.setItem("examen_"+cuentaAlumno, "hecho");
+}
+
+// PANEL PROFESOR
+function verPanelProfesor(){
+    document.body.innerHTML = "<h1>Panel Profesor</h1>";
+}
+
+// PDF
+function generarPDF(){
+
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF();
+
+    doc.text("Resultados",10,10);
+    doc.text(nombreAlumno,10,20);
+    doc.text(cuentaAlumno,10,30);
+    doc.text(calificacion.toFixed(2)+"%",10,40);
+
+    let y=50;
+
+    datosPDF.forEach(d=>{
+        if (y > 280) {
+            doc.addPage();
+            y = 20;
+        }
+    doc.setFontSize(10);
+
+    // Pregunta
+    doc.text(`P${d[0]}: ${d[1]}`,10,y);
+    y+=6;
+
+    // Respuesta alumno
+    doc.text(`Tu respuesta: ${d[2]}`,10,y);
+    y+=6;
+
+    // Correcta
+    doc.text(`Correcta: ${d[3]}`,10,y);
+    y+=10;
+    
+});
+
+    doc.save("resultado.pdf");
+}
+</script>
+
+</body>
+</html>
